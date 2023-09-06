@@ -13,7 +13,9 @@ interface Trip {
 }
 const deleteTrip = async (setTrips, id) => {
     try {
-        const deletedTripData = await fetch('http://localhost:3000/api/trips/'+id, {method: 'delete', headers: {authorization: "test-token"}});
+        const token = JSON.parse(localStorage.getItem("token") as string);
+        console.log(token)
+        const deletedTripData = await fetch('http://localhost:3000/api/trips/'+id, {method: 'delete', headers: {authorization: token}});
         if (!deletedTripData)
             throw new Error(`could not get data`);
         const deletedTrip: Trip = await deletedTripData.json()

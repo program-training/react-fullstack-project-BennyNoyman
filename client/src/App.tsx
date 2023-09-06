@@ -8,6 +8,7 @@ import UserLogin from "./Components/UserLogin";
 import ContextProvider from "./Contexts/ComponentsContext";
 import IdContextProvider from "./Contexts/idContext";
 
+
 import './App.css'
 
 function App() {
@@ -20,9 +21,9 @@ function App() {
           <IdContextProvider>
               <Trips/>
               <TripDetails/>
+              <UpdateTripForm/>
           </IdContextProvider>
         <NewTripForm/>
-        <UpdateTripForm/>
         <UserRegistration/>
         <UserLogin/>
       </ContextProvider>

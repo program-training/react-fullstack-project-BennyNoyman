@@ -1,72 +1,82 @@
 import {ComponentContext} from "../Contexts/ComponentsContext";
-import {useContext, useRef} from "react";
+import {useContext, useState} from "react";
 import './visibility.css';
 interface Trip {
-    name?: string;
-    destination?: string;
-    startDate?: string;
-    endDate?: string;
-    description?: string;
-    price?: number;
-    image?: string;
-    activities?: string;
+    id?: string
+    name: string;
+    destination: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    price: number;
+    image: string;
+    activities: string[];
+}
+const submit = async (newTrip: Trip) => {
+    try {
+        const token = JSON.parse(localStorage.getItem("token") as string);
+        const addedTripData = await fetch('http://localhost:3000/api/trips', {
+            headers: {authorization: token, "content-Type": "application/json"}, method: 'post', body: JSON.stringify(newTrip)});
+        const addedTrip: Trip = await addedTripData.json();
+        if (!addedTrip) throw new Error(`fail to get data`)
+        console.log(addedTrip);
+    }catch (error) {
+        console.log(error)
+    }
 }
 export default function NewTripForm() {
     const Components = useContext(ComponentContext);
     if (!Components) return;
     const {components, setComponents} = Components;
-    const name = useRef<HTMLInputElement | null>(null);
-    const destination = useRef<HTMLInputElement | null>(null);
-    const startDate = useRef<HTMLInputElement | null>(null);
-    const endDate = useRef<HTMLInputElement | null>(null);
-    const description = useRef<HTMLInputElement | null>(null);
-    const price = useRef<HTMLInputElement | null>(null);
-    const image = useRef<HTMLInputElement | null>(null);
-    const activities = useRef<HTMLInputElement | null>(null);
-    const newTrip = {
-        name: name.current?.value,
-        destination: destination.current?.value,
-        startDate: startDate.current?.value,
-        endDate: endDate.current?.value,
-        description: description.current?.value,
-        price: price.current?.value,
-        image: image.current?.value,
-        activities: activities.current?.value.join(' ')
-    }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [newTrip, setNewTrip] = useState<Trip>(
+        {
+            name: "",
+            destination: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+            price: 0,
+            image: "",
+            activities: []
+        }
+    )
     return(
         <div className={components.NewTripForm}>
-            <form onSubmit={(event) => event.preventDefault()}>
+            <form onSubmit={() => {
+                submit(newTrip);
+            }}>
                 <label>
                     name:
-                    <input ref={name}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, name: event.target.value})}/>
                 </label>
                 <label>
                     destination:
-                    <input ref={destination}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, destination: event.target.value})}/>
                 </label>
                 <label>
                     startDate:
-                    <input ref={startDate}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, startDate: event.target.value})}/>
                 </label>
                 <label>
                     endDate:
-                    <input ref={endDate}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, endDate: event.target.value})}/>
                 </label>
                 <label>
                     description:
-                    <input ref={description}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, description: event.target.value})}/>
                 </label>
                 <label>
                     price:
-                    <input type={"number"} ref={price}></input>
+                    <input type={"number"} onChange={(event) => setNewTrip({...newTrip, price: parseInt(event.target.value)})}/>
                 </label>
                 <label>
                     image:
-                    <input ref={image}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, image: event.target.value})}/>
                 </label>
                 <label>
                     activities:
-                    <input ref={activities}></input>
+                    <input onChange={(event) => setNewTrip({...newTrip, activities: event.target.value.split(',')})}/>
                 </label>
                 <button>add new trip</button>
             </form>
